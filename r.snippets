@@ -108,9 +108,9 @@ snippet header_script
 	
 snippet connection
 	${1:name} <- DBI::dbConnect(odbc::odbc(), 
-															Driver = 'ODBC Driver 17 for SQL Server',
-															Server = '${2:name}', 
-															trusted_connection = 'yes'
+	Driver = 'ODBC Driver 17 for SQL Server',
+	Server = '${2:name}', 
+	trusted_connection = 'yes'
 	)
 			
 snippet setup_pool
