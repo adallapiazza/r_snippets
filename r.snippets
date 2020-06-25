@@ -1,0 +1,158 @@
+snippet lib
+	library(${1:package})
+
+snippet req
+	require(${1:package})
+
+snippet src
+	source("${1:file.R}")
+
+snippet ret
+	return(${1:code})
+
+snippet mat
+	matrix(${1:data}, nrow = ${2:rows}, ncol = ${3:cols})
+
+snippet sg
+	setGeneric("${1:generic}", function(${2:x, ...}) {
+		standardGeneric("${1:generic}")
+	})
+
+snippet sm
+	setMethod("${1:generic}", ${2:class}, function(${2:x, ...}) {
+		${0}
+	})
+
+snippet sc
+	setClass("${1:Class}", slots = c(${2:name = "type"}))
+
+snippet if
+	if (${1:condition}) {
+		${0}
+	}
+
+snippet el
+	else {
+		${0}
+	}
+
+snippet ei
+	else if (${1:condition}) {
+		${0}
+	}
+
+snippet fun
+	${1:name} <- function(${2:variables}) {
+		${0}
+	}
+
+snippet for
+	for (${1:variable} in ${2:vector}) {
+		${0}
+	}
+
+snippet while
+	while (${1:condition}) {
+		${0}
+	}
+
+snippet switch
+	switch (${1:object},
+		${2:case} = ${3:action}
+	)
+
+snippet apply
+	apply(${1:array}, ${2:margin}, ${3:...})
+
+snippet lapply
+	lapply(${1:list}, ${2:function})
+
+snippet sapply
+	sapply(${1:list}, ${2:function})
+
+snippet mapply
+	mapply(${1:function}, ${2:...})
+
+snippet tapply
+	tapply(${1:vector}, ${2:index}, ${3:function})
+
+snippet vapply
+	vapply(${1:list}, ${2:function}, FUN.VALUE = ${3:type}, ${4:...})
+
+snippet rapply
+	rapply(${1:list}, ${2:function})
+
+snippet ts
+	`r paste("#", date(), "------------------------------\n")`
+
+snippet shinyapp
+	library(shiny)
+	
+	ui <- fluidPage(
+	  ${0}
+	)
+	
+	server <- function(input, output, session) {
+	  
+	}
+	
+	shinyApp(ui, server)
+
+snippet header_script
+	##################################################
+	## Name:
+	## Description:
+	## Author:
+	## Date:
+	##################################################
+	
+snippet connection
+	${1:name} <- DBI::dbConnect(odbc::odbc(), 
+															Driver = 'ODBC Driver 17 for SQL Server',
+															Server = '${2:name}', 
+															trusted_connection = 'yes'
+	)
+			
+snippet setup_pool
+	library(DBI)
+	library(odbc)
+	library(dbplyr)
+	library(pool)
+	library(magrittr)
+	library(dplyr)
+	library(tidyr)
+	options(scipen = 999)
+	pool <- pool::dbPool(
+		odbc::odbc(),
+		DSN = "AZUREDB01",
+		minSize = 1,     # this could have been omitted since it's the default
+		maxSize = 2,     # in tidal scripts use max = 1. in shiny apps, add as needed.
+		idleTimeout = 60000  # one hour 3600000 - default is one minute 60000
+	)
+	${1:name}_df <- pool %>% 
+		dplyr::tbl(dbplyr::in_schema(paste("${2:db_name}", "${3:schema}", sep = "."), "${4:table_name}")) %>% 
+		dplyr::collect()
+	
+	pool::poolClose(pool)
+	rm(pool)
+			
+snippet create_table
+	conn <- DBI::dbConnect(odbc::odbc(), "AZUREDB01")
+	w_table = "${1:table_name}"
+	w_schema = "${2:schema}"
+	w_database = "${3:database}"
+	t <- NULL
+	t <- head(${4:df_to_write})
+	t$LoadedBy <- c("RScript")
+	t$LoadDate <- c(lubridate::force_tz(Sys.time(), tzone = "UTC"))
+	
+	DBI::dbWriteTable(
+		conn = conn,
+		odbc::dbId(conn, w_table, w_schema, w_database),
+		value = t,
+		append = FALSE
+		)
+	DBI::dbDisconnect(conn)
+			
+			
+			
